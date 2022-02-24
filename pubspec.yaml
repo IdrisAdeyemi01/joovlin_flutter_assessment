@@ -9,13 +9,14 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  
   cupertino_icons: ^1.0.2
   ferry: ^0.10.4
+  ferry_hive_store: ^0.4.4
   flutter:
     sdk: flutter
   flutter_hooks: ^0.18.2+1
-  gql_http_link: ^0.4.2
+  gql_http_link: null
+  hive_flutter: ^1.1.0
   intl: ^0.17.0
   provider: ^6.0.2
 

@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             viewModel.navigateToCreateTask(context);
+            // viewModel.getAllTasks();
           },
           child: const Icon(Icons.add),
           splashColor: AppColors.primaryColor,

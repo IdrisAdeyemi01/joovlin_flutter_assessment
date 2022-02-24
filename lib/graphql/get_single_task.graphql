@@ -1,0 +1,11 @@
+query GetSingleTask($id: uuid!) {
+  tasks_by_pk(id: $id) {
+    created_at
+    description
+    developer_id
+    id
+    isCompleted
+    title
+    updated_at
+  }
+}
