@@ -9,6 +9,7 @@ class CustomElevatedButton extends StatelessWidget {
 
   final Color labelColor;
   final bool isLoading;
+  final bool isActive;
 
   const CustomElevatedButton({
     Key? key,
@@ -17,12 +18,11 @@ class CustomElevatedButton extends StatelessWidget {
     this.isLoading = false,
     this.color = AppColors.primaryColor,
     this.labelColor = AppColors.white,
+    this.isActive = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         elevation: 0,
@@ -30,12 +30,13 @@ class CustomElevatedButton extends StatelessWidget {
           ScreenUtil.screenWidth(context),
           50,
         ),
-        primary: color,
+        onSurface: AppColors.black,
+        primary: isLoading ? AppColors.darkTextColor : color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      onPressed: isLoading ? null : onPressed,
+      onPressed: isActive ? (isLoading ? null : onPressed) : null,
       child: Text(
         isLoading ? 'Loading...' : label,
       ),

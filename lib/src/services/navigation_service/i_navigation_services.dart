@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'navigation_services.dart';
 
 abstract class INavigationService {
   GlobalKey<NavigatorState> get navigatorKey;

@@ -1,71 +1,67 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:joovlin_assesssment/graphql/get_all_task.req.gql.dart';
 import 'package:joovlin_assesssment/src/content/utilities/base_change_notifiers.dart';
 import 'package:joovlin_assesssment/src/features/model/task.dart';
 import 'package:joovlin_assesssment/src/features/views/create_new_task.dart';
 import 'package:joovlin_assesssment/src/features/views/edit_task.dart';
-import 'package:joovlin_assesssment/src/repository/task_client.dart';
-import 'package:joovlin_assesssment/src/services/navigation_service/i_navigation_services.dart';
+import 'package:joovlin_assesssment/src/services/graphql_service/graphql_service.dart';
 import 'package:joovlin_assesssment/src/services/navigation_service/navigation_services.dart';
+import 'package:joovlin_assesssment/src/services/snackbar_service/snackbar_service.dart';
+import 'package:joovlin_assesssment/src/shared/models/failure.dart';
 import 'package:provider/provider.dart';
 
 class HomePageViewModel extends BaseChangeNotifier {
-  List<Task> tasksList = [
-    Task(
-      createdAt: formatDate(DateTime.now()),
-      description: 'This is task 1',
-      developerId: 'Idris001',
-      id: '${DateTime.now().millisecondsSinceEpoch}',
-      isCompleted: true,
-      title: 'Task 1',
-      updatedAt: formatDate(DateTime.now()),
-    ),
-    Task(
-      createdAt: formatDate(DateTime.now()),
-      description: 'This is task 2',
-      developerId: 'Idris001',
-      id: '${DateTime.now().millisecondsSinceEpoch}',
-      isCompleted: false,
-      title: 'Task 2',
-      updatedAt: formatDate(DateTime.now()),
-    ),
-    Task(
-      createdAt: formatDate(DateTime.now()),
-      description: 'This is task 3',
-      developerId: 'Idris001',
-      id: '${DateTime.now().millisecondsSinceEpoch}',
-      isCompleted: false,
-      title: 'Task 3',
-      updatedAt: formatDate(DateTime.now()),
-    ),
-    Task(
-      createdAt: formatDate(DateTime.now()),
-      description: 'This is task 4',
-      developerId: 'Idris001',
-      id: '${DateTime.now().millisecondsSinceEpoch}',
-      isCompleted: true,
-      title: 'Task 4',
-      updatedAt: formatDate(DateTime.now()),
-    ),
-  ];
+  List<Task>? tasksList;
+
+  bool isLoading = false;
 
   int get taskCount {
-    return tasksList.length;
+    return tasksList!.length;
   }
 
-  void editTask(Task task, String title, String description) {
-    task.copyWith(
-      title: title,
-      description: description,
-    );
+  void _reArrangeList() {
+    List<Task> firstListOfTasks = [];
+    List<Task> secondListOfTasks = [];
+    for (Task i in tasksList!) {
+      if (i.isCompleted == true) {
+        secondListOfTasks.add(i);
+      } else {
+        firstListOfTasks.add(i);
+      }
+    }
+    firstListOfTasks.addAll(secondListOfTasks);
+    tasksList = firstListOfTasks;
+    isLoading = false;
     setState();
   }
 
-  void addTask(Task task) {
-    tasksList.add(task);
-    setState();
+  void getAllTasks(BuildContext context) async {
+    try {
+      tasksList = await Provider.of<GraphQLService>(context).getAllTask();
+      if (tasksList!.isEmpty) {
+        tasksList = [];
+        setState();
+        return;
+      } else {
+        _reArrangeList();
+        setState();
+        return;
+      }
+    } on Failure catch (error) {
+      Provider.of<SnackBarService>(context).showSnackbar(error.message);
+    }
+  }
+
+  void updateTask(BuildContext context, Task task, bool val) async {
+    try {
+      await Provider.of<GraphQLService>(context, listen: false)
+          .updateTask(task.id!, val, task.title!, task.description!);
+      _reArrangeList();
+      setState();
+    } on Failure catch (error) {
+      Provider.of<SnackBarService>(context).showSnackbar(error.message);
+    }
   }
 
   void navigateToCreateTask(BuildContext context) {
@@ -88,19 +84,5 @@ class HomePageViewModel extends BaseChangeNotifier {
 
   static String formatDate(DateTime date) {
     return DateFormat.yMMMEd('en_US').format(date);
-  }
-
-  void getAllTasks() async {
-    final allTaskReq =
-        GGetAllTasksReq((b) => b..vars.developer_id = 'Idris001');
-    final client = await initClient();
-    client.request(allTaskReq).listen((response) {
-      final result = response.dataSource;
-      print(result);
-
-      // if (result.isNotEmpty) {
-      //   print(result);
-      // }
-    });
   }
 }

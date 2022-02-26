@@ -12,5 +12,9 @@ class AppStrings {
   static const describeYourTask = 'Describe your task';
   static const save = 'Save';
 
-  //
+  //Task Details
+  static const taskDetails = 'Task details';
+
+  //General
+  static const developerID = 'IdrisAdeyemi01';
 }

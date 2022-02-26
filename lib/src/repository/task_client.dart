@@ -12,7 +12,12 @@ Future<Client> initClient() async {
 
   final cache = Cache(store: store);
 
-  final link = HttpLink('https://todolistassessment.hasura.app/v1/graphql');
+  final link = HttpLink("https://todolistassessment.hasura.app/v1/graphql",
+      defaultHeaders: {
+        "x-hasura-admin-secret":
+            "JG7vDm15n1fVT2QhwYNyDFJJmm5iQKIea3H0tVpYnNV735Wa2ms3msthBGquM2sm",
+        "content-type": "application/json"
+      });
 
   final client = Client(
     link: link,

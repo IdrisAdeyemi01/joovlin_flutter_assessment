@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:joovlin_assesssment/src/content/constants/app_colors.dart';
 import 'package:joovlin_assesssment/src/content/constants/app_strings.dart';
 import 'package:joovlin_assesssment/src/features/model/task.dart';
+import 'package:joovlin_assesssment/src/features/view_models/create_new_task_view_model.dart';
+import 'package:joovlin_assesssment/src/features/view_models/edit_task_view_model.dart';
 import 'package:joovlin_assesssment/src/features/view_models/home_page_view_model.dart';
+import 'package:joovlin_assesssment/src/services/navigation_service/navigation_services.dart';
 import 'package:joovlin_assesssment/src/shared/shared_widgets/custom_elevated_button.dart';
 import 'package:joovlin_assesssment/src/shared/shared_widgets/custom_text_form_field.dart';
 import 'package:joovlin_assesssment/src/shared/shared_widgets/spacing.dart';
@@ -23,13 +27,22 @@ class EditTask extends HookWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.keyboard_backspace),
-          onPressed: () {},
+          onPressed: () {
+            Provider.of<NavigationService>(context, listen: false).back();
+          },
         ),
         title: Text(
-          AppStrings.createTask,
-          style: textTheme.headline5,
+          AppStrings.taskDetails,
+          style: textTheme.headline5!.copyWith(color: AppColors.white),
         ),
-        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.delete))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                Provider.of<EditTaskViewModel>(context, listen: false)
+                    .deleteTask(context, task);
+              },
+              icon: const Icon(Icons.delete)),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -63,10 +76,13 @@ class EditTask extends HookWidget {
               label: AppStrings.save,
               onPressed: () {
                 print(titleController.text);
-                Provider.of<HomePageViewModel>(context, listen: false).editTask(
-                    task, titleController.text, descriptionController.text);
+                Provider.of<EditTaskViewModel>(context, listen: false).editTask(
+                    context,
+                    task,
+                    titleController.text,
+                    descriptionController.text);
 
-                Navigator.pop(context);
+                Provider.of<NavigationService>(context, listen: false).back();
               },
             )
           ],
